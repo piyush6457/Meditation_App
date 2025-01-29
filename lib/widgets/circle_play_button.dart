@@ -7,25 +7,24 @@ class CirclePlayButton extends StatelessWidget {
     super.key,
     required this.isPlaying,
     required this.player,
+    required this.onPressed, // Corrected the onPressed parameter type
   });
 
   final bool isPlaying;
   final AudioPlayer player;
+  final VoidCallback onPressed; // Correct type for onPressed callback
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: kCircleBoxDecoration,
+      decoration:
+          kCircleBoxDecoration, // Assuming kCircleBoxDecoration is a predefined constant
       child: Center(
         child: IconButton(
-          icon: isPlaying ? kPlayIcon : kPauseIcon,
-          onPressed: () async {
-            if (isPlaying) {
-              await player.pause();
-            } else {
-              await player.resume();
-            }
-          },
+          icon: isPlaying
+              ? kPauseIcon
+              : kPlayIcon, // Assuming kPauseIcon & kPlayIcon are predefined constants
+          onPressed: onPressed, // Use the passed callback for onPressed
         ),
       ),
     );

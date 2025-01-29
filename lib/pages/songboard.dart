@@ -39,23 +39,22 @@ class _SongBoardState extends State<SongBoard> {
     );
 
     setAudio();
-    // listion to state playing, paused, stop
+
     player.onPlayerStateChanged.listen((event) {
       setState(() {
-        isPlaying = event == PlayerState.playing;
+        isPlaying = event == PlayerState.PLAYING;
       });
     });
 
-    // Listen to duration position
     player.onDurationChanged.listen((newDuration) {
       setState(() {
         duration = newDuration;
       });
     });
-    // listen to audion position
-    player.onPositionChanged.listen((newPostion) {
+
+    player.onAudioPositionChanged.listen((newPosition) {
       setState(() {
-        position = newPostion;
+        position = newPosition;
       });
     });
   }
@@ -68,15 +67,28 @@ class _SongBoardState extends State<SongBoard> {
     musicName = newMusicName;
     musicSource = newMusicSource;
     imageSource = newImageSource;
-    return;
   }
+
+// Future setAudio() async {
+//   try {
+//     // Using AudioSource.asset to specify the audio file path from assets
+//     final source = AudioSource.asset(musicSource);
+
+//     // Play the audio
+//     await player.play(source);
+
+//     // Set the release mode to loop
+//     player.setReleaseMode(ReleaseMode.LOOP);
+//   } catch (e) {
+//     print("Error loading audio: $e"); // Important: Handle errors!
+//   }
+// }
 
   Future setAudio() async {
     AssetSource source = AssetSource('musics/$musicSource');
     await player.play(source);
     // repeat the music
-    player.setReleaseMode(ReleaseMode.loop);
-    player.setSource(source);
+    player.setReleaseMode(ReleaseMode.LOOP);
   }
 
   @override
@@ -107,26 +119,46 @@ class _SongBoardState extends State<SongBoard> {
                   max: duration.inSeconds.toDouble(),
                   value: position.inSeconds.toDouble(),
                   activeColor: Colors.deepPurple,
-                  inactiveColor: Colors.deepPurple[200],
-                  onChanged: (value) async {
-                    final position = Duration(seconds: value.toInt());
-                    await player.seek(position);
-                    await player.resume();
+                  inactiveColor: Colors.deepPurple.withOpacity(0.5),
+                  onChanged: (double value) async {
+                    // Added async
+                    setState(() {
+                      position = Duration(
+                          seconds: value.toInt()); // Update UI immediately
+                    });
+                    await player
+                        .seek(Duration(seconds: value.toInt())); // Then seek
                   },
                 ),
-                CirclePlayButton(isPlaying: isPlaying, player: player),
-                const SizedBox(
-                  height: 120,
-                ),
-                RectangleButton(
-                  onPressed: () async {
-                    await player.stop();
-                    Navigator.pop(context);
-                  },
-                  child: const Text(
-                    "GO TO DASHBOARD",
-                    style: kButtonTextStyle,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CirclePlayButton(
+                      isPlaying: isPlaying,
+                      player: player,
+                      onPressed: () {
+                        if (isPlaying) {
+                          player.pause();
+                        } else {
+                          player.resume();
+                        }
+                      },
+                      //icon: isPlaying
+                      // ? Icons.pause_circle_filled
+                      // : Icons.play_circle_filled,
+                      //isPlaying: null,
+                    ),
+                    RectangleButton(
+                      onPressed: () {
+                        player.stop();
+                        Navigator.pop(context);
+                      },
+                      child: const Text(
+                        "Stop",
+                        style: kButtonTextStyle,
+                      ),
+                    ),
+                  ],
                 )
               ],
             ),
