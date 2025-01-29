@@ -38,7 +38,7 @@ class _SongBoardState extends State<SongBoard> {
       widget.imageSource,
     );
 
-    setAudio();
+    //setAudio();
 
     player.onPlayerStateChanged.listen((event) {
       setState(() {
@@ -84,12 +84,12 @@ class _SongBoardState extends State<SongBoard> {
 //   }
 // }
 
-  Future setAudio() async {
-    AssetSource source = AssetSource('musics/$musicSource');
-    await player.play(source);
-    // repeat the music
-    player.setReleaseMode(ReleaseMode.LOOP);
-  }
+  // Future setAudio() async {
+  //   AssetSource source = AssetSource('musics/$musicSource');
+  //   await player.play(source);
+  //   // repeat the music
+  //   player.setReleaseMode(ReleaseMode.LOOP);
+  // }
 
   @override
   Widget build(BuildContext context) {
